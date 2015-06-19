@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
+              android:background="@color/bg_register"
               android:layout_height="match_parent" android:weightSum="1">
 
     <!--<ImageButton-->
@@ -11,18 +12,17 @@
             <!--style="?android:attr/borderlessButtonStyle"-->
             <!--android:id="@+id/imageButton" android:layout_gravity="center_horizontal"/>-->
 
-    <!--<com.brightcove.player.view.BrightcoveVideoView-->
-            <!--android:id="@+id/brightcove_video_view"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="280dp"-->
-            <!--android:visibility="visible"-->
-            <!--android:layout_gravity="center_horizontal|top"/>-->
+    <com.brightcove.player.view.BrightcoveVideoView
+            android:id="@+id/brightcove_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:layout_gravity="center_horizontal|top"/>
 
-        <com.brightcove.player.view.SeamlessVideoView
-                android:id="@+id/brightcove_video_view"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_gravity="center_horizontal|top"/>
+        <!--<com.brightcove.player.view.SeamlessVideoView-->
+                <!--android:id="@+id/brightcove_video_view"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="280dp"-->
+                <!--android:layout_gravity="center_horizontal|top"/>-->
     <!--<VideoView-->
             <!--android:id="@+id/brightcove_video_view"-->
             <!--android:layout_width="match_parent"-->
@@ -37,24 +37,26 @@
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Lesson 4"
+            android:visibility="visible"
+            android:textColor="@color/input_register"
             android:id="@+id/lesson_detail_title"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="23dp"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/lesson_description_text"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="0dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="The Call to Discipleship"
+        android:textColor="@color/input_register"
             android:id="@+id/lesson_detail_description"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="23dp"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/lesson_description_text"
-            android:textSize="12sp"
+            android:layout_marginTop="0dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="April 19, 2015"
+             android:textColor="@color/input_register"
             android:id="@+id/lesson_detail_date"/>
         <TextView
                 android:layout_width="wrap_content"
@@ -68,10 +70,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="23dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="1dp"
                 android:textColor="@color/lesson_description_text"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Click to listen to mp3 audio"
+                android:text="@string/mp3_button"
+
                 android:onClick="onClickAudio"
                 android:clickable="true"
                 android:id="@+id/lesson_detail_mp3"/>
@@ -87,13 +90,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="23dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="1dp"
                 android:textColor="@color/lesson_description_text"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Click to view PDF version of lesson"
-
+                android:text="@string/pdf_button"
                 android:onClick="onClickPdf"
                 android:clickable="true"
 
                 android:id="@+id/lesson_detail_pdf"/>
+
+
 </LinearLayout>

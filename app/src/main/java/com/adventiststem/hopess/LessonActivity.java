@@ -46,6 +46,8 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
                 intent.putExtra("VideoUrl", item.videoURL);
                 intent.putExtra("title", item.title);
                 intent.putExtra("description", item.description);
+                intent.putExtra("AudioUrl", item.audioURL);
+                intent.putExtra("PdfUrl", item.pdfURL);
                 startActivity(intent);
             }
         });
