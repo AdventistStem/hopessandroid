@@ -1,39 +1,35 @@
 package com.adventiststem.hopess;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
-import com.adventiststem.hopess.Utils.BrightcoveAPI;
-import com.brightcove.player.analytics.Analytics;
-import com.brightcove.player.media.Catalog;
-import com.brightcove.player.media.DeliveryType;
-import com.brightcove.player.media.PlaylistListener;
-import com.brightcove.player.media.VideoListener;
-import com.brightcove.player.model.Playlist;
-import com.brightcove.player.model.Video;
-import com.brightcove.player.view.BrightcoveVideoView;
-import com.brightcove.player.view.SeamlessVideoView;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
+import com.adventiststem.hopess.Utils.BrightcoveAPI;
+import com.brightcove.player.view.BrightcoveVideoView;
 
 //2015-04-26, djp - for lesson details
 public class LessonDetailActivity extends Activity implements PlayListCallBack{
 
-    private String audioUrl;
+    private static final String MP3_DIR = "hopess_mp3";
+	private String audioUrl;
     private String videoUrl;
     private String pdfUrl;
     private String id;
@@ -49,6 +45,9 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 
     private static String TAG = "LessonDetailActivity";
     private VideoView videoView;
+	private DownloadManager dm;
+	private long enqueue;
+	private TextView downloadTextView;
 
 
     @Override
@@ -59,8 +58,6 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         tVtitle = (TextView)findViewById(R.id.lesson_detail_title);
         tVdescription = (TextView)findViewById(R.id.lesson_detail_description);
         tVdate = (TextView)findViewById(R.id.lesson_detail_date);
-
-
 
         videoUrl = getIntent().getStringExtra("VideoUrl");
         title = getIntent().getStringExtra("title");
@@ -100,15 +97,136 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         brightcoveVideoView.setVideoPath(videoUrl);
         //brightcoveVideoView.start();
 
+        
+        downloadTextView = (TextView) findViewById(R.id.lesson_download_mp3);
+        
+        File file = new File(Environment.getExternalStorageDirectory()
+	                + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+		if(file.exists())
+			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+		else
+			downloadTextView.setText(getString(R.string.mp3_download_button));
+    }
+    
+    
+    public void onDownloadAudioClick(View v)
+    {
+    	  Log.e("URL", ""+audioUrl);
+    	
+    	  if(!downloaded())
+    	  {    		  
+    		  BroadcastReceiver receiver = new BroadcastReceiver() {
+    	            @Override
+    	            public void onReceive(Context context, Intent intent) {
+    	                String action = intent.getAction();
+    	                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+    	                	
+    	                	downloadTextView.setClickable(true);
+    	                	
+    	                	Toast.makeText(LessonDetailActivity.this, "Download completed. Saved for offline listning!", Toast.LENGTH_LONG).show();
+    	                	if(downloaded())
+    	            			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+    	            		else
+    	            			downloadTextView.setText(getString(R.string.mp3_download_button));
+    	                }
+    	            }
+    	        };
+
+    	        registerReceiver(receiver, new IntentFilter(
+    	                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    		  
+    		  File direct = new File(Environment.getExternalStorageDirectory()
+    	                + "/"+MP3_DIR);
+
+    	        if (!direct.exists()) {
+    	            direct.mkdirs();
+    	        }
+
+    	        DownloadManager mgr = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
+
+    	        Uri downloadUri = Uri.parse(audioUrl);
+    	        DownloadManager.Request request = new DownloadManager.Request(
+    	                downloadUri);
+
+    	        request.setAllowedNetworkTypes(
+    	                DownloadManager.Request.NETWORK_WIFI
+    	                        | DownloadManager.Request.NETWORK_MOBILE)
+    	                .setDestinationInExternalPublicDir("/"+MP3_DIR, ""+audioUrl.substring(audioUrl.lastIndexOf("/")));
+
+    	        mgr.enqueue(request);
+    		  
+    	        Toast.makeText(this, "Downloading started...", Toast.LENGTH_LONG).show();
+    	        downloadTextView.setClickable(false);
+    		  
+    	  }else{
+    		  
+    		 
+    		  
+    		  new AlertDialog.Builder(this)
+    		  .setTitle("Confirmation")
+    		  .setMessage("Do you really want to DELETE audio?")
+    		  .setIcon(android.R.drawable.ic_dialog_alert)
+    		  .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+    		      public void onClick(DialogInterface dialog, int whichButton) {
+    		    	  File file = new File(Environment.getExternalStorageDirectory()
+    		    	            + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+    		    	  if(file.exists())
+    	    			  file.delete();
+    	    		  Toast.makeText(LessonDetailActivity.this, "Audio Deleted from phone!", Toast.LENGTH_LONG).show();
+    	    		  
+    	    		  if(downloaded())
+    	      			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+    	      		else
+    	      			downloadTextView.setText(getString(R.string.mp3_download_button));
+    		      }})
+    		   .setNegativeButton(android.R.string.no, null).show();
+    		  
+    		  
+    		  
+    		  
+    		  
+    	  }
     }
 
-    public void onClickAudio(View view){
+    private boolean downloaded() {
+		try{
+			File file = new File(Environment.getExternalStorageDirectory()
+  	                + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+			if(file.exists())
+				return true;
+		}catch(Exception e){
+			
+		}
+		return false;
+	}
+
+
+	public void onClickAudio(View view){
 
         brightcoveVideoView.pause();
+        
+        
+        if(downloaded())
+        {
+        	Intent viewMediaIntent = new Intent();   
+        	viewMediaIntent.setAction(android.content.Intent.ACTION_VIEW);   
+        	File file = new File(Environment.getExternalStorageDirectory()
+        			+ "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/")));  
+        	viewMediaIntent.setDataAndType(Uri.fromFile(file), "audio/*");   
+        	viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        	startActivity(viewMediaIntent); 
+        }else{
+	        Uri myUri = Uri.parse(audioUrl);
+	        Intent intent = new Intent(android.content.Intent.ACTION_VIEW); 
+	        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+	        intent.setDataAndType(myUri, "audio/*"); 
+	        startActivity(intent);
+        }
 
-        Intent intent = new Intent(this, Mp3Activity.class);
-        intent.putExtra("AudioUrl", audioUrl);
-        startActivity(intent);
+//        Intent intent = new Intent(this, Mp3Activity.class);
+//        intent.putExtra("AudioUrl", audioUrl);
+//        startActivity(intent);
        // brightcoveVideoView.clear();
 
 //        brightcoveVideoView.stopPlayback();
