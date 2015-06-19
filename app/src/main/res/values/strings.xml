@@ -17,5 +17,7 @@
 <resources>
     <string name="app_name">Hope Sabbath School</string>
   <string name="mp3_button"><u>Click to listen to mp3 audio</u></string>
+  <string name="mp3_download_button"><u>Click to Download mp3 audio</u></string>
+  <string name="mp3_delete_download_button"><u>Click to Delete mp3 audio</u></string>
   <string name="pdf_button"><u>Click to view PDF version of lesson</u></string>
 </resources>
