@@ -87,7 +87,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         // create tabs
         for(String tab_name: tabs){
-            actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
+
+
+            if (tab_name.compareTo("Archive")==0) {
+                actionBar.addTab(actionBar.newTab().setTabListener(this).setText(tab_name));
+            }
+            else {
+                actionBar.addTab(actionBar.newTab().setTabListener(this).setText(tab_name));
+            }
         }
     }
 

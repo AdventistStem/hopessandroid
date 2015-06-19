@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,9 +22,7 @@ import java.util.regex.Pattern;
  */
 public class BrightcoveAPI {
 
-    private static String year;
     private static String currYear;
-    //private static String quarter = "2";
     //private static String URL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:desc,publish_date:desc%22";
     private String latestVideosURL;
     private ArrayList<LessonItem> responseBody;
@@ -66,13 +65,10 @@ public class BrightcoveAPI {
 
                         JSONObject videoItem = (JSONObject)items.get(i);
 
-
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.setThumbnailURL(videoItem.getString("thumbnailURL"));
                         lessonItem.videoStillURL = videoItem.getString("videoStillURL");
-                        //lessonItem.setVideoURL(getVideoLink(videoItem.getString("shortDescription")));
-                        //lessonItem.setAudioURL(getAudioLink(videoItem.getString("shortDescription")));
-                        //lessonItem.setPdfURL(getAudioLink(videoItem.getString("shortDescription")).replace(".mp3", ".pdf"));
+
 
                         String nameAndDescription = videoItem.getString("name").replace(")", "");
                         String [] nameDescrArr = nameAndDescription.split("\\(");
@@ -80,6 +76,27 @@ public class BrightcoveAPI {
                         lessonItem.setTitle(lessonNumberAndTitle[0]);
                         lessonItem.setDescription(lessonNumberAndTitle[1]);
                         lessonItem.setDate(nameDescrArr[1]);
+
+                        //get lesson number
+                        String [] lessonNumber = lessonNumberAndTitle[0].split(" ");
+                        String episode = "";
+                        if (lessonNumber[1].length()<2) {
+                            episode = "E0"+lessonNumber[1];
+                        }
+                        else {
+                            episode = "E"+lessonNumber[1];
+                        }
+
+
+                        String quarter = "Q"+videoItem.getJSONObject("customFields").getString("category_secondary");
+                        String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".mp3";
+                        String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".pdf";
+                        String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".mp4";
+
+
+                        lessonItem.setAudioURL(audioUrl);
+                        lessonItem.setPdfURL(pdfUrl);
+                        lessonItem.setVideoURL(videoUrl);
 
                         responseBody.add(lessonItem);
 
@@ -101,22 +118,20 @@ public class BrightcoveAPI {
 
         });
 
-
     }
 
 
-
-
     //search videos by year and quarter
-    public void searchVideos(String year, int quarter) {
+    public void searchVideos(final String year, final int quarter) {
 
         responseBody = new ArrayList<LessonItem>();
 
         //special case where there content is stored in different format in brightcove
-//        if (year.compareTo("2013") == 0 && quarter == 1) {
-//            playListCallBack.receiveLessonItems(responseBody);
-//            return;
-//        }
+        if (year.compareTo("2013") == 0 && quarter == 1) {
+            playListCallBack.receiveLessonItems(responseBody);
+         //   System.out.println(responseBody);
+            return;
+        }
 
        String searchURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:desc,publish_date:desc%22";
         //String tempURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&video_fields=HLSURL,thumbnailURL,id,name,tags&custom_fields=series_title,episode_number,url,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:2014&all=category_secondary:1&sort_by=start_date:desc,publish_date:desc";
@@ -136,7 +151,7 @@ public class BrightcoveAPI {
                         JSONObject videoItem = (JSONObject)items.get(i);
 
 
-                        System.out.println("HLSURL is: "+ videoItem.optString("HLSURL"));
+                        //System.out.println("HLSURL is: "+ videoItem.optString("HLSURL"));
 
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.videoStillURL = videoItem.getString("videoStillURL");
@@ -145,12 +160,50 @@ public class BrightcoveAPI {
                         //lessonItem.setAudioURL(getAudioLink(videoItem.getString("shortDescription")));
                         //lessonItem.setPdfURL(getAudioLink(videoItem.getString("shortDescription")).replace(".mp3", ".pdf"));
 
+
+
+
                         String nameAndDescription = videoItem.getString("name").replace(")", "");
+
+                        //corner case
+                        if (!nameAndDescription.contains("Lesson")){
+                            continue;
+                        }
+
+
                         String [] nameDescrArr = nameAndDescription.split("\\(");
                         String [] lessonNumberAndTitle = nameDescrArr[0].split("-");
+
+
                         lessonItem.setTitle(lessonNumberAndTitle[0]);
                         lessonItem.setDescription(lessonNumberAndTitle[1]);
-                        lessonItem.setDate(nameDescrArr[1]);
+
+
+                        if (nameDescrArr.length > 1) {
+                           // System.out.println(Arrays.toString(nameDescrArr));
+                            lessonItem.setDate(nameDescrArr[1]);
+                        }
+
+
+
+                        //get lesson number
+                        String [] lessonNumber = lessonNumberAndTitle[0].split(" ");
+                        String episode = "";
+                        if (lessonNumber[1].length()<2) {
+                            episode = "E0"+lessonNumber[1];
+                        }
+                        else {
+                            episode = "E"+lessonNumber[1];
+                        }
+
+                        String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".mp3";
+                        String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".pdf";
+                        String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".mp4";
+                        //System.out.println(audioUrl);
+
+                        lessonItem.setAudioURL(audioUrl);
+                        lessonItem.setPdfURL(pdfUrl);
+                        lessonItem.setVideoURL(videoUrl);
 
                         responseBody.add(lessonItem);
 
@@ -165,19 +218,13 @@ public class BrightcoveAPI {
                 }
 
             }
-
             public void onFailure(int statusCode, Header [] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
 
             }
 
         });
 
-
     }
-
-
-
-
 
     //extract videoURL from the description key
     public String getVideoLink(String st){
@@ -252,8 +299,6 @@ public class BrightcoveAPI {
             public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
                 //do something
                 Log.i(TAG,"PDF download failed");
-
-
             }
 
             @Override

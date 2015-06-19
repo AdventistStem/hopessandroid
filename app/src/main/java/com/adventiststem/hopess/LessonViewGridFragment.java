@@ -58,7 +58,6 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 //start an activity to display videos for this year
 
-
                 // retrieve theListView item
                 LessonItem item = mItems.get(position);
 

@@ -40,7 +40,7 @@ public class ArchiveViewFragment extends Fragment {
         int yr = calendar.get(Calendar.YEAR);
         currYear = yr+"";
 
-        for (int i = yr; i >= 2010; i--){
+        for (int i = yr; i >= 2013; i--){
             mItems.add(i+"");
 
         }
@@ -69,11 +69,9 @@ public class ArchiveViewFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 //start an activity to display videos for this year
 
-
-
                 AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
                 b.setTitle("Quarter");
-                b.setIcon(R.drawable.ic_launcher);
+                //b.setIcon(R.drawable.ic_launcher);
                 String[] types = {"1st", "2nd", "3rd", "4th"};
                 b.setItems(types, new DialogInterface.OnClickListener() {
 

@@ -21,6 +21,7 @@ import com.brightcove.player.model.Playlist;
 import com.brightcove.player.model.Video;
 import com.brightcove.player.view.BrightcoveVideoView;
 import com.brightcove.player.view.SeamlessVideoView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -40,10 +41,11 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     private String description;
     private String date;
 
-    private SeamlessVideoView brightcoveVideoView;
+    private BrightcoveVideoView brightcoveVideoView;
     private TextView tVtitle;
     private TextView tVdescription;
     private TextView tVdate;
+    private MediaController controller;
 
     private static String TAG = "LessonDetailActivity";
     private VideoView videoView;
@@ -54,6 +56,12 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         super.onCreate(bundle);
         setContentView(R.layout.lesson_detail);
 
+        tVtitle = (TextView)findViewById(R.id.lesson_detail_title);
+        tVdescription = (TextView)findViewById(R.id.lesson_detail_description);
+        tVdate = (TextView)findViewById(R.id.lesson_detail_date);
+
+
+
         videoUrl = getIntent().getStringExtra("VideoUrl");
         title = getIntent().getStringExtra("title");
         description = getIntent().getStringExtra("description");
@@ -62,47 +70,45 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         pdfUrl = getIntent().getStringExtra("PdfUrl");
         id = getIntent().getStringExtra("id");
 
-        brightcoveVideoView = (SeamlessVideoView) findViewById(R.id.brightcove_video_view);
+        brightcoveVideoView = (BrightcoveVideoView) findViewById(R.id.brightcove_video_view);
 
-        MediaController controller = new MediaController(this);
+        controller = new MediaController(this);
         brightcoveVideoView.setMediaController(controller);
 
-
-        Catalog catalog = new Catalog("MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..");
-        catalog.findVideoByID(id, new VideoListener() {
-                    @Override
-                    public void onVideo(Video video) {
-                        brightcoveVideoView.add(video);
-
-                        brightcoveVideoView.start();
-
-
-                    }
-
-                    @Override
-                    public void onError(String s) {
-
-                    }
-                });
-
-        //brightcoveVideoView.add(Video.createVideo(videoUrl));
-       // brightcoveVideoView.add(Video.createVideo("http://c.brightcove.com/services/mobile/streaming/index/master.m3u8?videoId=1730977531001", DeliveryType.HLS));
-        //brightcoveVideoView.start();
-
-
-        tVtitle = (TextView)findViewById(R.id.lesson_detail_title);
-        tVdescription = (TextView)findViewById(R.id.lesson_detail_description);
-        tVdate = (TextView)findViewById(R.id.lesson_detail_date);
 
         tVtitle.setText(title);
         tVdescription.setText(description);
         tVdate.setText(date);
 
+//        Catalog catalog = new Catalog("MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..");
+//        catalog.findVideoByID(id, new VideoListener() {
+//                    @Override
+//                    public void onVideo(Video video) {
+//                        brightcoveVideoView.add(video);
+//
+//                        brightcoveVideoView.start();
+//
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(String s) {
+//
+//                    }
+//                });
 
+        brightcoveVideoView.setVideoPath(videoUrl);
+        //brightcoveVideoView.start();
 
     }
 
     public void onClickAudio(View view){
+
+        brightcoveVideoView.pause();
+
+        Intent intent = new Intent(this, Mp3Activity.class);
+        intent.putExtra("AudioUrl", audioUrl);
+        startActivity(intent);
        // brightcoveVideoView.clear();
 
 //        brightcoveVideoView.stopPlayback();
@@ -125,6 +131,10 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     }
 
 
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
 
     public void onClickPdf(View view){
 
@@ -156,6 +166,12 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        brightcoveVideoView.pause();
     }
 
 }
