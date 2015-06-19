@@ -45,7 +45,8 @@ public class LessonGridAdapter extends ArrayAdapter<LessonItem> {
         //viewHolder.ivIcon.setImageDrawable(item.icon);
         Picasso.with(getContext()).load(item.videoStillURL).into(viewHolder.ivIcon);
         //viewHolder.tvTitle.setText(item.title);
-        viewHolder.tvDescription.setText(item.description);
+        String [] titlesplit = item.title.split(" ");
+        viewHolder.tvDescription.setText(titlesplit[1]+" - "+item.description);
        // viewHolder.tvDate.setText(item.date);
         return convertView;
     }
