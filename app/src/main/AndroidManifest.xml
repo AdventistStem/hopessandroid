@@ -27,6 +27,8 @@
 
         <activity android:name=".LessonActivity"/>
         <activity android:name=".Mp3Activity"/>
+        <activity android:name=".pdf.PDFViewerActivity"/>
+        <activity android:name=".pdf.PDFWebViewActivity"/>
 
     </application>
 </manifest>

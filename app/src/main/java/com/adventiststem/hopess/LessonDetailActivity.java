@@ -1,7 +1,12 @@
 package com.adventiststem.hopess;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +18,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -23,12 +30,16 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.adventiststem.hopess.Utils.BrightcoveAPI;
+import com.adventiststem.hopess.pdf.PDFViewerActivity;
 import com.brightcove.player.view.BrightcoveVideoView;
+
+import org.apache.http.util.ByteArrayBuffer;
 
 //2015-04-26, djp - for lesson details
 public class LessonDetailActivity extends Activity implements PlayListCallBack{
 
     private static final String MP3_DIR = "hopess_mp3";
+	private static final String PDF_LOC = Environment.getExternalStorageDirectory().getPath() + "/HopeSS/PDF/";
 	private String audioUrl;
     private String videoUrl;
     private String pdfUrl;
@@ -48,9 +59,10 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	private DownloadManager dm;
 	private long enqueue;
 	private TextView downloadTextView;
+	private boolean pdfDownloaded;
 
 
-    @Override
+	@Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.lesson_detail);
@@ -254,18 +266,160 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         super.onResume();
     }
 
-    public void onClickPdf(View view){
-
-        brightcoveVideoView.pause();
+	/**
+	 * OnClickPDF
+	 * Called upon clicking the PDF button.
+	 * @param view
+	 */
+	public void onClickPdf(View view) {
+        brightcoveVideoView.pause(); //Pause the Video before displaying our PDF
 
         BrightcoveAPI api = new BrightcoveAPI(this);
         api.setReceiver(this);
 
-//        Intent intent = new Intent(this, PDFViewerActivity.class);
-//        intent.putExtra("PdfUrl", pdfUrl);
-//        startActivity(intent);
+		boolean downloaded = false;
+
+		String tempLoc = getCacheDir().getPath() + "/temp.pdf"; //Location of the Temporary PDF.
+
+        /*
+         * Check to see if the PDF downloaded correctly.
+         */
+		if(!pdfDownloaded()) {
+			File temp = tempDownload(pdfUrl);
+			if(temp == null) {
+				displayPDFDownloadError();
+				return;
+			}
+
+		} else {
+			downloaded = true;
+		}
+		Intent intent = new Intent(this, PDFViewerActivity.class);
+		intent.putExtra("pdfLoc", downloaded?PDF_LOC + pdfUrl.substring(pdfUrl.lastIndexOf("/")):tempLoc);
+		startActivity(intent);
+
     }
 
+	/**
+	 * Download PDF Click.
+	 * Called upon the user wanting to download a PDF. - Will update this when we figure out how we want downloads to appear.
+	 */
+	private void downloadPDFClick() {
+		if(!pdfDownloaded()) {
+			File download = pdfDownload(pdfUrl);
+			if(download == null) {
+				displayPDFDownloadError();
+				return;
+			}
+		} else {
+			//TODO: Logic for PDF Deletion
+		}
+	}
+
+	/**
+	 * Displays an error message if the download for a PDF file Fails
+	 */
+	private void displayPDFDownloadError() {
+		AlertDialog.Builder errorBox  = new AlertDialog.Builder(this);
+		errorBox.setMessage("There was an error downloading the study guide. Check your connection or try again later.");
+		errorBox.setTitle("Download Error");
+		errorBox.setPositiveButton("Continue", null);
+		errorBox.setCancelable(true);
+		errorBox.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+		errorBox.create().show();
+	}
+
+	/**
+	 * Checking if the PDF exists.
+	 * @return A boolean value denoting whether or not the PDF for this lesson exists.
+	 */
+	private boolean pdfDownloaded() {
+		File pdfLocation = new File(PDF_LOC + pdfUrl.substring(pdfUrl.lastIndexOf("/")));
+		return pdfLocation.exists();
+	}
+
+	/**
+	 * PDF Download
+	 *
+	 * Used to download pdf to the external cache directory.
+	 * @param pdfLoc The URL of the PDF to download
+	 */
+	private File pdfDownload(final String pdfLoc) {
+		File result = null;
+		try {
+			result = new AsyncTask<String, Void, File>() {
+
+				@Override
+				protected File doInBackground(String... params) {
+					try {
+						File location = new File(PDF_LOC);
+						File pdf = new File(location, pdfLoc.substring(pdfLoc.lastIndexOf("/")));
+						pdf.createNewFile();
+						URL url = new URL(pdfLoc);
+						BufferedInputStream input = new BufferedInputStream(url.openConnection().getInputStream());
+						ByteArrayBuffer buffer = new ByteArrayBuffer(75000);
+						int val = 0;
+						while ((val = input.read()) != -1) {
+							buffer.append((byte) val);
+						}
+						FileOutputStream output = new FileOutputStream(pdf);
+						output.write(buffer.toByteArray());
+						output.close();
+						return pdf;
+					} catch (IOException ex) {
+					}
+					return null;
+				}
+			}.execute(pdfLoc).get();
+		} catch (InterruptedException | ExecutionException e) {
+			//TODO: Error Logic
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * Download Temporary PDF
+	 *
+	 * Used to download pdf to the internal cache directory.
+	 * @param pdfLoc The URL of the PDF to download
+	 */
+	private File tempDownload(final String pdfLoc) {
+		File result = null;
+		try {
+			result = new AsyncTask<String, Void, File>() {
+
+                @Override
+                protected File doInBackground(String... params) {
+                    try {
+                        File cache = getCacheDir();
+                        File pdf = new File(cache, "temp.pdf");
+                        pdf.createNewFile();
+                        URL url = new URL(pdfLoc);
+                        BufferedInputStream input = new BufferedInputStream(url.openConnection().getInputStream());
+                        ByteArrayBuffer buffer = new ByteArrayBuffer(75000);
+                        int val = 0;
+                        while ((val = input.read()) != -1) {
+                            buffer.append((byte) val);
+                        }
+                        FileOutputStream output = new FileOutputStream(pdf);
+                        output.write(buffer.toByteArray());
+                        output.close();
+                        return pdf;
+                    } catch (IOException ex) {
+                    }
+                    return null;
+                }
+            }.execute(pdfLoc).get();
+		} catch (InterruptedException | ExecutionException e) {
+			//Error Logic - Taken care of in a higher method.
+			return null;
+		}
+		return result;
+	}
 
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
