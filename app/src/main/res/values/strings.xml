@@ -20,4 +20,5 @@
   <string name="mp3_download_button"><u>Click to Download mp3 audio</u></string>
   <string name="mp3_delete_download_button"><u>Click to Delete mp3 audio</u></string>
   <string name="pdf_button"><u>Click to view PDF version of lesson</u></string>
+  <string name="pdf_download_button"><u>Click to download the study guide.</u></string>
 </resources>
