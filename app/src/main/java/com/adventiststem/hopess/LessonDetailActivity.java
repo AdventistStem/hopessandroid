@@ -290,7 +290,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 			downloaded = true;
 		}
 		Intent intent = new Intent(this, PDFViewerActivity.class);
-		intent.putExtra("pdfLoc", downloaded?(new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/"))).toString()):tempLoc);
+		intent.putExtra("pdfLoc", downloaded?(new File(getApplicationContext().getExternalFilesDir(PDF_DIR), pdfUrl.substring(pdfUrl.lastIndexOf("/"))).toString()):tempLoc);
 		startActivity(intent);
 
     }
