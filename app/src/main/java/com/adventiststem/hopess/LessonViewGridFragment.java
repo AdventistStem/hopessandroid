@@ -1,10 +1,14 @@
 package com.adventiststem.hopess;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,11 @@ import android.widget.GridView;
 import android.widget.Toast;
 import com.adventiststem.hopess.Utils.BrightcoveAPI;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +31,7 @@ import java.util.List;
  */
 public class LessonViewGridFragment extends Fragment implements PlayListCallBack {
 
+    private static final String OFFLINE_LIST_NAME = "offline.dat";
     private List<LessonItem> mItems; // ListView items list
     private ArrayAdapter mAdapter;
     private GridView gridView;
@@ -34,10 +44,62 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         super.onCreate(savedInstanceState);
         mItems = new ArrayList<LessonItem>();
         mAdapter = new LessonGridAdapter(getActivity(), mItems);
+        //Let's see if we have an internet connection
+        Context context = getActivity();
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if(!isConnected) {
+            //Log.i("LessonGridViewFragment:", "Not Connected!?");
+            retrieveCachedList();
+            return;
+        }
+        //Log.i("LessonGridViewFragment:", "Supposedly Connected");
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
         brightcoveAPI.retrieveVideos();
+    }
 
+    /**
+     * Saves the list to our directory for viewing when we don't have an internet connection
+     * @param items The list of items to save.
+     */
+    private void saveItems(ArrayList<LessonItem> items) {
+        items = new ArrayList<>(items);
+        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        try {
+            if(!file.exists())
+                file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(items);
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * No internet connection? Retrieve our list that we saved from a working session.
+     */
+    private void retrieveCachedList() {
+        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        try {
+            if(!file.exists()) {
+                Toast.makeText(getActivity(), "Make sure you have an internet connection before opening this app for the first time.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Toast.makeText(getActivity(), "No internet connection detected. You may only view or listen to lessons you have downloaded.", Toast.LENGTH_LONG).show();
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            ArrayList<LessonItem> items = (ArrayList<LessonItem>) ois.readObject();
+            ois.close();
+            receiveLessonItems(items);
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -82,6 +144,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
         System.out.println("LessonReceiverCalled" + items.size());
+        saveItems(items);
         for (LessonItem lesson: items){
             mItems.add(lesson);
             mAdapter.notifyDataSetChanged();

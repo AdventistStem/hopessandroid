@@ -39,7 +39,7 @@ import org.apache.http.util.ByteArrayBuffer;
 public class LessonDetailActivity extends Activity implements PlayListCallBack{
 
     private static final String MP3_DIR = "hopess_mp3";
-	private static final String PDF_LOC = Environment.getExternalStorageDirectory().getPath() + "/HopeSS/PDF/";
+	private static final String PDF_DIR = "hopess_pdf";
 	private String audioUrl;
     private String videoUrl;
     private String pdfUrl;
@@ -59,7 +59,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	private DownloadManager dm;
 	private long enqueue;
 	private TextView downloadTextView;
-	private boolean pdfDownloaded;
+	private TextView pdfDownloadView;
 
 
 	@Override
@@ -112,12 +112,17 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         
         downloadTextView = (TextView) findViewById(R.id.lesson_download_mp3);
         
-        File file = new File(Environment.getExternalStorageDirectory()
-	                + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+        File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
 		if(file.exists())
 			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
 		else
 			downloadTextView.setText(getString(R.string.mp3_download_button));
+		pdfDownloadView = (TextView) findViewById(R.id.lesson_download_pdf);
+		if(!pdfDownloaded())
+			pdfDownloadView.setText("Click to download the study guide.");
+		else
+			pdfDownloadView.setText("Click to delete the study guide.");
+
     }
     
     
@@ -135,7 +140,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	                	
     	                	downloadTextView.setClickable(true);
     	                	
-    	                	Toast.makeText(LessonDetailActivity.this, "Download completed. Saved for offline listning!", Toast.LENGTH_LONG).show();
+    	                	Toast.makeText(LessonDetailActivity.this, "Download completed. Saved for offline listening!", Toast.LENGTH_LONG).show();
     	                	if(downloaded())
     	            			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
     	            		else
@@ -147,8 +152,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	        registerReceiver(receiver, new IntentFilter(
     	                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     		  
-    		  File direct = new File(Environment.getExternalStorageDirectory()
-    	                + "/"+MP3_DIR);
+    		  File direct = getApplicationContext().getExternalFilesDir(MP3_DIR);
 
     	        if (!direct.exists()) {
     	            direct.mkdirs();
@@ -163,7 +167,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	        request.setAllowedNetworkTypes(
     	                DownloadManager.Request.NETWORK_WIFI
     	                        | DownloadManager.Request.NETWORK_MOBILE)
-    	                .setDestinationInExternalPublicDir("/"+MP3_DIR, ""+audioUrl.substring(audioUrl.lastIndexOf("/")));
+    	                .setDestinationInExternalFilesDir(getApplicationContext(), "/" + MP3_DIR ,audioUrl.substring(audioUrl.lastIndexOf("/")));
 
     	        mgr.enqueue(request);
     		  
@@ -171,9 +175,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	        downloadTextView.setClickable(false);
     		  
     	  }else{
-    		  
-    		 
-    		  
+
     		  new AlertDialog.Builder(this)
     		  .setTitle("Confirmation")
     		  .setMessage("Do you really want to DELETE audio?")
@@ -181,8 +183,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     		  .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
     		      public void onClick(DialogInterface dialog, int whichButton) {
-    		    	  File file = new File(Environment.getExternalStorageDirectory()
-    		    	            + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+    		    	  File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
     		    	  if(file.exists())
     	    			  file.delete();
     	    		  Toast.makeText(LessonDetailActivity.this, "Audio Deleted from phone!", Toast.LENGTH_LONG).show();
@@ -193,18 +194,13 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	      			downloadTextView.setText(getString(R.string.mp3_download_button));
     		      }})
     		   .setNegativeButton(android.R.string.no, null).show();
-    		  
-    		  
-    		  
-    		  
-    		  
+
     	  }
     }
 
     private boolean downloaded() {
 		try{
-			File file = new File(Environment.getExternalStorageDirectory()
-  	                + "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/"))); 
+			File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
 			if(file.exists())
 				return true;
 		}catch(Exception e){
@@ -223,8 +219,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         {
         	Intent viewMediaIntent = new Intent();   
         	viewMediaIntent.setAction(android.content.Intent.ACTION_VIEW);   
-        	File file = new File(Environment.getExternalStorageDirectory()
-        			+ "/"+MP3_DIR+"/"+ audioUrl.substring(audioUrl.lastIndexOf("/")));  
+        	File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
         	viewMediaIntent.setDataAndType(Uri.fromFile(file), "audio/*");   
         	viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         	startActivity(viewMediaIntent); 
@@ -295,7 +290,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 			downloaded = true;
 		}
 		Intent intent = new Intent(this, PDFViewerActivity.class);
-		intent.putExtra("pdfLoc", downloaded?PDF_LOC + pdfUrl.substring(pdfUrl.lastIndexOf("/")):tempLoc);
+		intent.putExtra("pdfLoc", downloaded?(new File(getApplicationContext().getExternalFilesDir(PDF_DIR), pdfUrl.substring(pdfUrl.lastIndexOf("/"))).toString()):tempLoc);
 		startActivity(intent);
 
     }
@@ -304,15 +299,30 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	 * Download PDF Click.
 	 * Called upon the user wanting to download a PDF. - Will update this when we figure out how we want downloads to appear.
 	 */
-	private void downloadPDFClick() {
+	public void downloadPDFClick(View view) {
 		if(!pdfDownloaded()) {
+			Toast.makeText(LessonDetailActivity.this, "Downloading study guide for offline viewing.", Toast.LENGTH_LONG).show();
 			File download = pdfDownload(pdfUrl);
 			if(download == null) {
 				displayPDFDownloadError();
 				return;
 			}
+			Toast.makeText(LessonDetailActivity.this, "Download complete. Study guide successfully downloaded!", Toast.LENGTH_LONG).show();
 		} else {
-			//TODO: Logic for PDF Deletion
+			new AlertDialog.Builder(this)
+					.setTitle("Deletion Confirmation")
+					.setMessage("Are you sure you want to delete the study guide?")
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int whichButton) {
+							File file = new File(getApplicationContext().getExternalFilesDir(PDF_DIR), pdfUrl.substring(pdfUrl.lastIndexOf("/")));
+							if(file.exists())
+								file.delete();
+							Toast.makeText(LessonDetailActivity.this, "Study guide successfully deleted.", Toast.LENGTH_LONG).show();
+							pdfDownloadView.setText("Click to download the study guide.");
+						}})
+					.setNegativeButton(android.R.string.no, null).show();
 		}
 	}
 
@@ -320,6 +330,8 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	 * Displays an error message if the download for a PDF file Fails
 	 */
 	private void displayPDFDownloadError() {
+		Toast.makeText(LessonDetailActivity.this, "There was an error downloading the study guide. Check your connection or try again later.", Toast.LENGTH_LONG).show();
+		/*
 		AlertDialog.Builder errorBox  = new AlertDialog.Builder(this);
 		errorBox.setMessage("There was an error downloading the study guide. Check your connection or try again later.");
 		errorBox.setTitle("Download Error");
@@ -330,6 +342,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 			}
 		});
 		errorBox.create().show();
+		*/
 	}
 
 	/**
@@ -337,7 +350,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	 * @return A boolean value denoting whether or not the PDF for this lesson exists.
 	 */
 	private boolean pdfDownloaded() {
-		File pdfLocation = new File(PDF_LOC + pdfUrl.substring(pdfUrl.lastIndexOf("/")));
+		File pdfLocation = new File(getApplicationContext().getExternalFilesDir(PDF_DIR), pdfUrl.substring(pdfUrl.lastIndexOf("/")));
 		return pdfLocation.exists();
 	}
 
@@ -355,7 +368,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 				@Override
 				protected File doInBackground(String... params) {
 					try {
-						File location = new File(PDF_LOC);
+						File location = getApplicationContext().getExternalFilesDir(PDF_DIR);
 						File pdf = new File(location, pdfLoc.substring(pdfLoc.lastIndexOf("/")));
 						pdf.createNewFile();
 						URL url = new URL(pdfLoc);
