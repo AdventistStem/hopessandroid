@@ -23,7 +23,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +36,13 @@ import android.widget.VideoView;
 
 import com.adventiststem.hopess.Utils.BrightcoveAPI;
 import com.adventiststem.hopess.pdf.PDFViewerActivity;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.brightcove.player.view.BrightcoveVideoView;
 
 import org.apache.http.util.ByteArrayBuffer;
 
 //2015-04-26, djp - for lesson details
-public class LessonDetailActivity extends Activity implements PlayListCallBack{
+public class LessonDetailActivity extends Activity implements PlayListCallBack, CustomVideoView.PlayPauseListener{
 
     private static final String MP3_DIR = "hopess_mp3";
 	private static final String PDF_DIR = "hopess_pdf";
@@ -48,7 +54,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     private String description;
     private String date;
 
-    private BrightcoveVideoView brightcoveVideoView;
+    private CustomVideoView brightcoveVideoView;
     private TextView tVtitle;
     private TextView tVdescription;
     private TextView tVdate;
@@ -60,12 +66,20 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 	private long enqueue;
 	private TextView downloadTextView;
 	private TextView pdfDownloadView;
+	private BootstrapButton videoButton;
 
 
 	@Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.lesson_detail);
+
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
+        setContentView(R.layout.lesson_detail_activity);
+
+		videoButton = (BootstrapButton) findViewById(R.id.lesson_detail_video);
 
         tVtitle = (TextView)findViewById(R.id.lesson_detail_title);
         tVdescription = (TextView)findViewById(R.id.lesson_detail_description);
@@ -77,16 +91,23 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         date = getIntent().getStringExtra("date");
         audioUrl = getIntent().getStringExtra("AudioUrl");
         pdfUrl = getIntent().getStringExtra("PdfUrl");
-        id = getIntent().getStringExtra("id");
+		id = getIntent().getStringExtra("id");
+		videoButton.setBootstrapButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        brightcoveVideoView = (BrightcoveVideoView) findViewById(R.id.brightcove_video_view);
+
+		brightcoveVideoView = (CustomVideoView) findViewById(R.id.brightcove_video_view);
+		brightcoveVideoView.setPlayPauseListener(this);
 
         controller = new MediaController(this);
+
         brightcoveVideoView.setMediaController(controller);
 
+		//brightcoveVideoView.
 
-        tVtitle.setText(title);
-        tVdescription.setText(description);
+
+//      tVtitle.setText(title);
+        tVdescription.setText(title.split(" ")[1]+" - "+ description);
         tVdate.setText(date);
 
 //        Catalog catalog = new Catalog("MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..");
@@ -110,18 +131,18 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
         //brightcoveVideoView.start();
 
         
-        downloadTextView = (TextView) findViewById(R.id.lesson_download_mp3);
-        
-        File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
-		if(file.exists())
-			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
-		else
-			downloadTextView.setText(getString(R.string.mp3_download_button));
-		pdfDownloadView = (TextView) findViewById(R.id.lesson_download_pdf);
-		if(!pdfDownloaded())
-			pdfDownloadView.setText("Click to download the study guide.");
-		else
-			pdfDownloadView.setText("Click to delete the study guide.");
+//        downloadTextView = (TextView) findViewById(R.id.lesson_download_mp3);
+//
+//        File file = new File(getApplicationContext().getExternalFilesDir(MP3_DIR), audioUrl.substring(audioUrl.lastIndexOf("/")));
+//		if(file.exists())
+//			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+//		else
+//			downloadTextView.setText(getString(R.string.mp3_download_button));
+//		pdfDownloadView = (TextView) findViewById(R.id.lesson_download_pdf);
+//		if(!pdfDownloaded())
+//			pdfDownloadView.setText("Click to download the study guide.");
+//		else
+//			pdfDownloadView.setText("Click to delete the study guide.");
 
     }
     
@@ -138,13 +159,13 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	                String action = intent.getAction();
     	                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
     	                	
-    	                	downloadTextView.setClickable(true);
+    	                	//downloadTextView.setClickable(true);
     	                	
     	                	Toast.makeText(LessonDetailActivity.this, "Download completed. Saved for offline listening!", Toast.LENGTH_LONG).show();
-    	                	if(downloaded())
-    	            			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
-    	            		else
-    	            			downloadTextView.setText(getString(R.string.mp3_download_button));
+//    	                	if(downloaded())
+//    	            			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+//    	            		else
+//    	            			downloadTextView.setText(getString(R.string.mp3_download_button));
     	                }
     	            }
     	        };
@@ -172,7 +193,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	        mgr.enqueue(request);
     		  
     	        Toast.makeText(this, "Downloading started...", Toast.LENGTH_LONG).show();
-    	        downloadTextView.setClickable(false);
+    	        //downloadTextView.setClickable(false);
     		  
     	  }else{
 
@@ -188,10 +209,10 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     	    			  file.delete();
     	    		  Toast.makeText(LessonDetailActivity.this, "Audio Deleted from phone!", Toast.LENGTH_LONG).show();
     	    		  
-    	    		  if(downloaded())
-    	      			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
-    	      		else
-    	      			downloadTextView.setText(getString(R.string.mp3_download_button));
+//    	    		  if(downloaded())
+//    	      			downloadTextView.setText(getString(R.string.mp3_delete_download_button));
+//    	      		else
+//    	      			downloadTextView.setText(getString(R.string.mp3_download_button));
     		      }})
     		   .setNegativeButton(android.R.string.no, null).show();
 
@@ -262,6 +283,15 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
     }
 
 	/**
+	 * OnClickVideoButton
+	 * Called upon clicking the Video button.
+	 * @param view
+	 */
+	public void onClickVideoButton(View view) {
+		brightcoveVideoView.start();
+	}
+
+	/**
 	 * OnClickPDF
 	 * Called upon clicking the PDF button.
 	 * @param view
@@ -320,7 +350,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 							if(file.exists())
 								file.delete();
 							Toast.makeText(LessonDetailActivity.this, "Study guide successfully deleted.", Toast.LENGTH_LONG).show();
-							pdfDownloadView.setText("Click to download the study guide.");
+							//pdfDownloadView.setText("Click to download the study guide.");
 						}})
 					.setNegativeButton(android.R.string.no, null).show();
 		}
@@ -450,13 +480,100 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack{
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+		boolean isPortLayout = getResources().getBoolean(R.bool.isPortLayout);
+		if(isPortLayout) {
+			// PORT
+		} else {
+			// LAND
+			//Does not work well
+			//requestWindowFeature(Window.FEATURE_NO_TITLE);
+			//getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		}
         super.onConfigurationChanged(newConfig);
+
+
+
     }
 
-    @Override
+
+
+	@Override
     public void onPause(){
         super.onPause();
         brightcoveVideoView.pause();
+
     }
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.lesson_detail_menu, menu);
+		return true;
+	}
+
+
+	@Override
+	public void onPlayVideo() {
+
+		videoButton.setBootstrapButtonEnabled(false);
+	}
+
+	@Override
+	public void onPauseVideo() {
+		videoButton.setBootstrapButtonEnabled(true);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+			case R.id.download:
+				AlertDialog.Builder b = new AlertDialog.Builder(this);
+				b.setTitle("Options");
+				b.setIcon(R.drawable.ic_action_storage);
+
+				String optAudio = "Download Audio";
+				String optPDF = "Download Study Guide";
+				if (downloaded()) {
+					optAudio = "Delete Audio";
+				}
+				if (pdfDownloaded()) {
+					optPDF = "Delete Study Guide";
+				}
+
+
+				String[] types = {optAudio, optPDF};
+				b.setItems(types, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch(which){
+							case 0:
+								//Audio
+								onDownloadAudioClick(null);
+
+
+								break;
+							case 1:
+								//Study Guide
+								downloadPDFClick(null);
+
+
+								break;
+
+						}
+
+						dialog.dismiss();
+					}
+
+				});
+
+				b.show();
+
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
 
 }

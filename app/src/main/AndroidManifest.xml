@@ -23,11 +23,23 @@
 
         <activity android:name=".LessonDetailActivity"
             android:configChanges="orientation|screenSize"
-            ></activity>
+            android:parentActivityName=".MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+
+        </activity>
 
         <activity android:name=".LessonActivity"/>
         <activity android:name=".Mp3Activity"/>
-        <activity android:name=".pdf.PDFViewerActivity"/>
+        <activity android:name=".pdf.PDFViewerActivity"
+            android:parentActivityName=".LessonDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LessonDetailActivity" />
+
+        </activity>
         <activity android:name=".pdf.PDFWebViewActivity"/>
 
     </application>
