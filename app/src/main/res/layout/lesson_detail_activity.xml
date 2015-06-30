@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/bg_register"
+    android:layout_height="match_parent" android:weightSum="1">
+
+    <com.adventiststem.hopess.CustomVideoView
+        android:id="@+id/brightcove_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_gravity="center_horizontal|top"/>
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="23dp"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+    <!--android:text="Lesson 4"-->
+    <!--android:visibility="visible"-->
+    <!--android:typeface="sans"-->
+    <!--android:textColor="@color/input_register"-->
+    <!--android:id="@+id/lesson_detail_title"/>-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="The Call to Discipleship"
+        android:typeface="sans"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:id="@+id/lesson_detail_description"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="23dp"
+        android:layout_marginTop="0dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="April 19, 2015"
+        android:typeface="sans"
+        android:textColor="@color/input_register"
+        android:id="@+id/lesson_detail_date"/>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            android:text="Video"
+            android:onClick = "onClickVideoButton"
+            bootstrap:bb_icon_right="fa-film"
+            bootstrap:bb_roundedCorners="true"
+            bootstrap:bb_type="warning"
+            android:id="@+id/lesson_detail_video"
+
+            />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Audio"
+            android:onClick="onClickAudio"
+            bootstrap:bb_icon_right="fa-file-sound-o"
+            bootstrap:bb_roundedCorners="true"
+            bootstrap:bb_type="info"
+            android:id="@+id/lesson_detail_mp3"
+            />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Study Guide"
+            bootstrap:bb_icon_right="fa-file-pdf-o"
+            bootstrap:bb_roundedCorners="true"
+            bootstrap:bb_type="danger"
+            android:onClick="onClickPdf"
+            android:id="@+id/lesson_detail_pdf"
+            />
+    </LinearLayout>
+
+</LinearLayout>

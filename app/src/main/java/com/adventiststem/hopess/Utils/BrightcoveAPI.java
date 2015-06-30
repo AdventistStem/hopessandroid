@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class BrightcoveAPI {
 
-    private static String currYear;
+    private static int currYear;
     //private static String URL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:desc,publish_date:desc%22";
     private String latestVideosURL;
     private ArrayList<LessonItem> responseBody;
@@ -38,14 +38,15 @@ public class BrightcoveAPI {
         context = ctx;
         client = new AsyncHttpClient();
         Calendar calendar = Calendar.getInstance();
-        int yr = calendar.get(Calendar.YEAR);
-        currYear = yr+"";
+        currYear = calendar.get(Calendar.YEAR);
         latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
     }
 
     public void setReceiver(PlayListCallBack playListCallBack){
         this.playListCallBack = playListCallBack;
     }
+
+
 
     //retrieve latest videos
     public void retrieveVideos() {
@@ -59,51 +60,68 @@ public class BrightcoveAPI {
                 try {
                     JSONArray items = response.getJSONArray("items");
                     int size = items.length();
+
+                    if (size == 0) {
+                        //Get lessons from the previous year - handles case when 4th quarter extends to the following year.
+                        int prevYear = currYear - 1;
+                        latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+ prevYear +"&sort_by=start_date:desc,publish_date:desc%22";
+                        retrieveVideos();
+                        latestVideosURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
+                        return;
+                    }
+
                     for (int i = 0; i < size; i++) {
 
                         LessonItem lessonItem = new LessonItem();
 
                         JSONObject videoItem = (JSONObject)items.get(i);
 
+                        System.out.println(videoItem);
+
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.setThumbnailURL(videoItem.getString("thumbnailURL"));
                         lessonItem.videoStillURL = videoItem.getString("videoStillURL");
 
+                        try {
+                            String nameAndDescription = videoItem.getString("name").replace(")", "");
 
-                        String nameAndDescription = videoItem.getString("name").replace(")", "");
-                        String [] nameDescrArr = nameAndDescription.split("\\(");
-                        String [] lessonNumberAndTitle = nameDescrArr[0].split("-");
-                        lessonItem.setTitle(lessonNumberAndTitle[0]);
-                        lessonItem.setDescription(lessonNumberAndTitle[1]);
-                        lessonItem.setDate(nameDescrArr[1]);
+                            String[] nameDescrArr = nameAndDescription.split("\\(");
 
-                        //get lesson number
-                        String [] lessonNumber = lessonNumberAndTitle[0].split(" ");
-                        String episode = "";
-                        if (lessonNumber[1].length()<2) {
-                            episode = "E0"+lessonNumber[1];
+                            String[] lessonNumberAndTitle = nameDescrArr[0].split("-");
+                            lessonItem.setTitle(lessonNumberAndTitle[0]);
+                            lessonItem.setDescription(lessonNumberAndTitle[1]);
+                            lessonItem.setDate(nameDescrArr[1]);
+
+
+                            //get lesson number
+                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
+                            String episode = "";
+                            if (lessonNumber[1].length() < 2) {
+                                episode = "E0" + lessonNumber[1];
+                            } else {
+                                episode = "E" + lessonNumber[1];
+                            }
+
+
+                            String quarter = "Q" + videoItem.getJSONObject("customFields").getString("category_secondary");
+                            String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".mp3";
+                            String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".pdf";
+                            String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".mp4";
+
+
+                            lessonItem.setAudioURL(audioUrl);
+                            lessonItem.setPdfURL(pdfUrl);
+                            lessonItem.setVideoURL(videoUrl);
+
+                            responseBody.add(lessonItem);
+                        } catch (ArrayIndexOutOfBoundsException a) {
+                            a.printStackTrace();
+                            continue;
                         }
-                        else {
-                            episode = "E"+lessonNumber[1];
-                        }
-
-
-                        String quarter = "Q"+videoItem.getJSONObject("customFields").getString("category_secondary");
-                        String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".mp3";
-                        String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".pdf";
-                        String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+currYear+"-"+quarter+"-"+episode+".mp4";
-
-
-                        lessonItem.setAudioURL(audioUrl);
-                        lessonItem.setPdfURL(pdfUrl);
-                        lessonItem.setVideoURL(videoUrl);
-
-                        responseBody.add(lessonItem);
 
                     }
 
                     playListCallBack.receiveLessonItems(responseBody);
-
 
 
                 } catch (JSONException e) {
@@ -162,50 +180,53 @@ public class BrightcoveAPI {
 
 
 
+                        try {
+                            String nameAndDescription = videoItem.getString("name").replace(")", "");
 
-                        String nameAndDescription = videoItem.getString("name").replace(")", "");
+                            //corner case
+                            if (!nameAndDescription.contains("Lesson")) {
+                                continue;
+                            }
 
-                        //corner case
-                        if (!nameAndDescription.contains("Lesson")){
+
+
+                            String[] nameDescrArr = nameAndDescription.split("\\(");
+                            String[] lessonNumberAndTitle = nameDescrArr[0].split("-");
+
+
+                            lessonItem.setTitle(lessonNumberAndTitle[0]);
+                            lessonItem.setDescription(lessonNumberAndTitle[1]);
+
+
+                            if (nameDescrArr.length > 1) {
+                                // System.out.println(Arrays.toString(nameDescrArr));
+                                lessonItem.setDate(nameDescrArr[1]);
+                            }
+
+
+                            //get lesson number
+                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
+                            String episode = "";
+                            if (lessonNumber[1].length() < 2) {
+                                episode = "E0" + lessonNumber[1];
+                            } else {
+                                episode = "E" + lessonNumber[1];
+                            }
+
+                            String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp3";
+                            String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".pdf";
+                            String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp4";
+                            //System.out.println(audioUrl);
+
+                            lessonItem.setAudioURL(audioUrl);
+                            lessonItem.setPdfURL(pdfUrl);
+                            lessonItem.setVideoURL(videoUrl);
+
+                            responseBody.add(lessonItem);
+                        } catch (ArrayIndexOutOfBoundsException a) {
+                            a.printStackTrace();
                             continue;
                         }
-
-
-                        String [] nameDescrArr = nameAndDescription.split("\\(");
-                        String [] lessonNumberAndTitle = nameDescrArr[0].split("-");
-
-
-                        lessonItem.setTitle(lessonNumberAndTitle[0]);
-                        lessonItem.setDescription(lessonNumberAndTitle[1]);
-
-
-                        if (nameDescrArr.length > 1) {
-                           // System.out.println(Arrays.toString(nameDescrArr));
-                            lessonItem.setDate(nameDescrArr[1]);
-                        }
-
-
-
-                        //get lesson number
-                        String [] lessonNumber = lessonNumberAndTitle[0].split(" ");
-                        String episode = "";
-                        if (lessonNumber[1].length()<2) {
-                            episode = "E0"+lessonNumber[1];
-                        }
-                        else {
-                            episode = "E"+lessonNumber[1];
-                        }
-
-                        String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".mp3";
-                        String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".pdf";
-                        String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-"+year+"-"+"Q"+quarter+"-"+episode+".mp4";
-                        //System.out.println(audioUrl);
-
-                        lessonItem.setAudioURL(audioUrl);
-                        lessonItem.setPdfURL(pdfUrl);
-                        lessonItem.setVideoURL(videoUrl);
-
-                        responseBody.add(lessonItem);
 
                     }
 

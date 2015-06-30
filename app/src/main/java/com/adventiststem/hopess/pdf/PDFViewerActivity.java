@@ -46,6 +46,8 @@ public class PDFViewerActivity  extends Activity {
         File pdf = new File(pdfLocation);
         //Log.i("PDFViewerActivity: ", "Prog: " + pdf.exists());
         view.fromFile(pdf).defaultPage(1).showMinimap(false).enableSwipe(true).load();
+        getActionBar().setDisplayHomeAsUpEnabled(false); //TODO: up-navigation
+
     }
 
 }
