@@ -37,6 +37,7 @@ import android.widget.VideoView;
 import com.adventiststem.hopess.Utils.BrightcoveAPI;
 import com.adventiststem.hopess.pdf.PDFViewerActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.brightcove.player.mediacontroller.BrightcoveMediaController;
 import com.brightcove.player.view.BrightcoveVideoView;
 
 import org.apache.http.util.ByteArrayBuffer;
@@ -58,7 +59,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
     private TextView tVtitle;
     private TextView tVdescription;
     private TextView tVdate;
-    private MediaController controller;
+    private BrightcoveMediaController controller;
 
     private static String TAG = "LessonDetailActivity";
     private VideoView videoView;
@@ -93,15 +94,17 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
         pdfUrl = getIntent().getStringExtra("PdfUrl");
 		id = getIntent().getStringExtra("id");
 		videoButton.setBootstrapButtonEnabled(true);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(false);
 
 
 		brightcoveVideoView = (CustomVideoView) findViewById(R.id.brightcove_video_view);
 		brightcoveVideoView.setPlayPauseListener(this);
 
-        controller = new MediaController(this);
+        controller = new BrightcoveMediaController(brightcoveVideoView);
+
 
         brightcoveVideoView.setMediaController(controller);
+		controller.show();
 
 		//brightcoveVideoView.
 
@@ -128,6 +131,9 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 //                });
 
         brightcoveVideoView.setVideoPath(videoUrl);
+		//brightcoveVideoView.seekTo(100);  //sets 'thumbnail' on videoview
+
+
         //brightcoveVideoView.start();
 
         

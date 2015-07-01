@@ -40,8 +40,8 @@ public class LessonAdapter extends ArrayAdapter<LessonItem> {
         LessonItem item = getItem(position);
         //viewHolder.ivIcon.setImageDrawable(item.icon);
         Picasso.with(getContext()).load(item.thumbnailURL).into(viewHolder.ivIcon);
-        viewHolder.tvTitle.setText(item.title);
-        viewHolder.tvDescription.setText(item.description);
+        //viewHolder.tvTitle.setText(item.title);
+        viewHolder.tvDescription.setText(item.title.split(" ")[1]+" -"+item.description);
         viewHolder.tvDate.setText(item.date);
         return convertView;
     }

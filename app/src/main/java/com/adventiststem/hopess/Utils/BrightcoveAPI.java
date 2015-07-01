@@ -39,7 +39,7 @@ public class BrightcoveAPI {
         client = new AsyncHttpClient();
         Calendar calendar = Calendar.getInstance();
         currYear = calendar.get(Calendar.YEAR);
-        latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
+        latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
     }
 
     public void setReceiver(PlayListCallBack playListCallBack){
@@ -64,9 +64,9 @@ public class BrightcoveAPI {
                     if (size == 0) {
                         //Get lessons from the previous year - handles case when 4th quarter extends to the following year.
                         int prevYear = currYear - 1;
-                        latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+ prevYear +"&sort_by=start_date:desc,publish_date:desc%22";
+                        latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+ prevYear +"&sort_by=start_date:desc,publish_date:desc%22";
                         retrieveVideos();
-                        latestVideosURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
+                        latestVideosURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
                         return;
                     }
 
@@ -151,7 +151,7 @@ public class BrightcoveAPI {
             return;
         }
 
-       String searchURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:desc,publish_date:desc%22";
+       String searchURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:asc,publish_date:desc%22";
         //String tempURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&video_fields=HLSURL,thumbnailURL,id,name,tags&custom_fields=series_title,episode_number,url,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:2014&all=category_secondary:1&sort_by=start_date:desc,publish_date:desc";
 
         client.get(searchURL, new JsonHttpResponseHandler() {

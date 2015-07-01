@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center_vertical"
-                android:background="@color/frame_background"
+                android:background="@color/white"
                 android:padding="5dp" >
     <!-- the innner view - provides the white rectangle -->
     <!--android:background="@drawable/frame"-->
@@ -14,8 +14,8 @@
                      >
         <!-- the icon view -->
         <ImageView android:id="@+id/ivIcon"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
+                   android:layout_width="100dp"
+                   android:layout_height="65dp"
                    android:padding="5dp"
                    android:contentDescription="ICon"
                    android:scaleType="fitXY"
@@ -30,13 +30,14 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:textColor="@color/lesson_title_text"
+                      android:visibility="gone"
                       android:textAppearance="@android:style/TextAppearance.Medium" />
             <!-- the description view -->
             <TextView android:id="@+id/tvDescription"
                       android:layout_below="@id/tvTitle"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:textColor="@color/lesson_description_text"
+                      android:textColor="@color/lesson_title_text"
                       android:textAppearance="@android:style/TextAppearance.Small" />
             <!-- the date view -->
             <TextView android:id="@+id/tvDate"
@@ -44,6 +45,7 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:textColor="@color/lesson_description_text"
+                      android:layout_marginTop="5dp"
                       android:textSize="10sp"
                       android:textAppearance="@android:style/TextAppearance.Small" />
         </RelativeLayout>
