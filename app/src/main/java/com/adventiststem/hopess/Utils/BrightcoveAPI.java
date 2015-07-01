@@ -114,6 +114,10 @@ public class BrightcoveAPI {
                             lessonItem.setVideoURL(videoUrl);
 
                             responseBody.add(lessonItem);
+
+                            if (lessonItem.title.compareTo("Lesson 1 ") == 0){
+                                break;
+                            }
                         } catch (ArrayIndexOutOfBoundsException a) {
                             a.printStackTrace();
                             continue;
@@ -122,6 +126,8 @@ public class BrightcoveAPI {
                     }
 
                     playListCallBack.receiveLessonItems(responseBody);
+
+
 
 
                 } catch (JSONException e) {
