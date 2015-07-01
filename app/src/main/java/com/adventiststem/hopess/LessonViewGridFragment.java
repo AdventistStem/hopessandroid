@@ -58,7 +58,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         //Log.i("LessonGridViewFragment:", "Supposedly Connected");
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
-        brightcoveAPI.retrieveVideos();
+
     }
 
     /**
@@ -140,13 +140,34 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        brightcoveAPI.retrieveVideos();
+
+    }
+
+    //checks to see if lesson pulled already exists locally
+    public boolean isLessonPresent(LessonItem item){
+        System.out.println("CHECKING FOR DUPLICATES");
+        for (LessonItem lesson: mItems) {
+            if (lesson.id.compareTo(item.id)==0)
+                return true;
+        }
+        return false;
+
+    }
 
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
         System.out.println("LessonReceiverCalled" + items.size());
         saveItems(items);
         for (LessonItem lesson: items){
-            mItems.add(lesson);
+
+            if (!isLessonPresent(lesson)) {
+                mItems.add(lesson);
+            }
+
             mAdapter.notifyDataSetChanged();
 
             //System.out.println("TITLE:"+lesson.title);
