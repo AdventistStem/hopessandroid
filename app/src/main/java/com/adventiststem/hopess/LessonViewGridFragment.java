@@ -1,5 +1,6 @@
 package com.adventiststem.hopess;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -36,6 +37,8 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private ArrayAdapter mAdapter;
     private GridView gridView;
     private BrightcoveAPI brightcoveAPI;
+    private ProgressDialog pDialog;
+
 
     private String currYear;
 
@@ -58,6 +61,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         //Log.i("LessonGridViewFragment:", "Supposedly Connected");
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
+
 
     }
 
@@ -148,7 +152,15 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
             brightcoveAPI = new BrightcoveAPI(getActivity());
             brightcoveAPI.setReceiver(this);
         }
-        brightcoveAPI.retrieveVideos();
+
+        Context context = getActivity();
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (isConnected)
+            brightcoveAPI.retrieveVideos();
+
 
     }
 
