@@ -125,7 +125,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
                 //Launch LessonDetailActivity with necessary video info
                 Intent intent = new Intent(getActivity(), LessonDetailActivity.class);
-                intent.putExtra("LessonName",item.title);
+                intent.putExtra("LessonName", item.title);
                 intent.putExtra("VideoUrl", item.videoURL);
                 intent.putExtra("title", item.title);
                 intent.putExtra("description", item.description);
@@ -143,6 +143,11 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     @Override
     public void onStart(){
         super.onStart();
+
+        if (brightcoveAPI == null ){
+            brightcoveAPI = new BrightcoveAPI(getActivity());
+            brightcoveAPI.setReceiver(this);
+        }
         brightcoveAPI.retrieveVideos();
 
     }
