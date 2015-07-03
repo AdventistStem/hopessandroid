@@ -37,6 +37,8 @@ import android.widget.VideoView;
 import com.adventiststem.hopess.Utils.BrightcoveAPI;
 import com.adventiststem.hopess.pdf.PDFViewerActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.brightcove.player.event.Event;
+import com.brightcove.player.event.EventListener;
 import com.brightcove.player.mediacontroller.BrightcoveMediaController;
 import com.brightcove.player.view.BrightcoveVideoView;
 
@@ -105,8 +107,6 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 
         brightcoveVideoView.setMediaController(controller);
 		controller.show();
-
-		//brightcoveVideoView.
 
 
 //      tVtitle.setText(title);

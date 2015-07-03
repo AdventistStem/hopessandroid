@@ -1,6 +1,5 @@
 package com.adventiststem.hopess;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -37,10 +36,6 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private ArrayAdapter mAdapter;
     private GridView gridView;
     private BrightcoveAPI brightcoveAPI;
-    private ProgressDialog pDialog;
-
-
-    private String currYear;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
