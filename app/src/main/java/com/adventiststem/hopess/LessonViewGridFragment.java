@@ -37,8 +37,6 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private GridView gridView;
     private BrightcoveAPI brightcoveAPI;
 
-    private String currYear;
-
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -58,6 +56,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         //Log.i("LessonGridViewFragment:", "Supposedly Connected");
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
+
 
     }
 
@@ -125,7 +124,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
                 //Launch LessonDetailActivity with necessary video info
                 Intent intent = new Intent(getActivity(), LessonDetailActivity.class);
-                intent.putExtra("LessonName",item.title);
+                intent.putExtra("LessonName", item.title);
                 intent.putExtra("VideoUrl", item.videoURL);
                 intent.putExtra("title", item.title);
                 intent.putExtra("description", item.description);
@@ -143,7 +142,20 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     @Override
     public void onStart(){
         super.onStart();
-        brightcoveAPI.retrieveVideos();
+
+        if (brightcoveAPI == null ){
+            brightcoveAPI = new BrightcoveAPI(getActivity());
+            brightcoveAPI.setReceiver(this);
+        }
+
+        Context context = getActivity();
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (isConnected)
+            brightcoveAPI.retrieveVideos();
+
 
     }
 
