@@ -66,7 +66,11 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      */
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
+        if(getActivity() == null)
+            return;
         File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        if(getActivity().getExternalFilesDir(null) == null)
+            file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
         try {
             if(!file.exists())
                 file.createNewFile();
@@ -84,9 +88,13 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      * No internet connection? Retrieve our list that we saved from a working session.
      */
     private void retrieveCachedList() {
+        if(getActivity() == null)
+            return;
         File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        if(getActivity().getExternalFilesDir(null) == null)
+            file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
         try {
-            if(!file.exists()) {
+            if(file == null || !file.exists()) {
                 Toast.makeText(getActivity(), "Make sure you have an internet connection before opening this app for the first time.", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -100,6 +108,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
             e.printStackTrace();
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
