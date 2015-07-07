@@ -3,6 +3,7 @@ package com.adventiststem.hopess;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -35,6 +36,7 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
     private LessonAdapter mAdapter;
     private ListView listView;
     private BrightcoveAPI brightcoveAPI;
+    private ProgressDialog pDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,11 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
         brightcoveAPI = new BrightcoveAPI(this);
         brightcoveAPI.setReceiver(this);
         brightcoveAPI.searchVideos(year, quarter);
+
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(true);
+        pDialog.setMessage("Loading Lessons");
+        pDialog.show();
 
         // Toast.makeText(this, "Year: "+year+" Quarter: "+quarter+"", Toast.LENGTH_SHORT).show();
 
@@ -137,6 +144,14 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
 
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
+
+        if (pDialog != null) {
+            if (pDialog.isShowing()){
+                pDialog.dismiss();
+            }
+        }
+
+
         saveItems(items);
         System.out.println("LessonReceiverCalled" + items.size());
         if (items.size() == 0){
