@@ -68,11 +68,14 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
         File file = null;
+        if(getActivity() == null)
+            return;
         try {
             file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
         } catch (NullPointerException ex) {
             //No external storage found
             file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
+
         }
         try {
             if(!file.exists())
@@ -91,6 +94,8 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      * No internet connection? Retrieve our list that we saved from a working session.
      */
     private void retrieveCachedList() {
+        if(getActivity() == null)
+            return;
         File file = null;
         try {
             file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
