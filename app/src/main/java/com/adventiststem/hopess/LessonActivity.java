@@ -1,28 +1,27 @@
+package com.adventiststem.hopess;
 
-        package com.adventiststem.hopess;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
+import com.adventiststem.hopess.Utils.BrightcoveAPI;
 
-        import android.app.Activity;
-        import android.app.ListActivity;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.content.res.Resources;
-        import android.net.ConnectivityManager;
-        import android.net.NetworkInfo;
-        import android.os.Bundle;
-        import android.view.View;
-        import android.widget.AdapterView;
-        import android.widget.ListView;
-        import android.widget.Toast;
-        import com.adventiststem.hopess.Utils.BrightcoveAPI;
-
-        import java.io.File;
-        import java.io.FileInputStream;
-        import java.io.FileOutputStream;
-        import java.io.IOException;
-        import java.io.ObjectInputStream;
-        import java.io.ObjectOutputStream;
-        import java.util.ArrayList;
-        import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by allanmarube on 5/25/15.
@@ -96,7 +95,13 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
      */
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
-        File file = new File(this.getExternalFilesDir(null), offline_name);
+        File file = null;
+        try {
+            file = new File(this.getExternalFilesDir(null), offline_name);
+        } catch (NullPointerException ex) {
+            //No external storage found
+            file = new File(this.getFilesDir(), offline_name);
+        }
         try {
             if(!file.exists())
                 file.createNewFile();
@@ -114,9 +119,15 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
      * No internet connection? Retrieve our list that we saved from a working session.
      */
     private void retrieveCachedList() {
-        File file = new File(this.getExternalFilesDir(null), offline_name);
+        File file = null;
         try {
-            if(!file.exists()) {
+            file = new File(this.getExternalFilesDir(null), offline_name);
+        } catch (NullPointerException ex) {
+            //No external storage found
+            file = new File(this.getFilesDir(), offline_name);
+        }
+        try {
+            if(file == null || !file.exists()) {
                 Toast.makeText(this, "Make sure you have an internet connection before opening this archive for the first time.", Toast.LENGTH_LONG).show();
                 return;
             }

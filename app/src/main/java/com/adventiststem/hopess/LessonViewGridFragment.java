@@ -37,6 +37,8 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private GridView gridView;
     private BrightcoveAPI brightcoveAPI;
 
+    private String currYear;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -57,7 +59,6 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
 
-
     }
 
     /**
@@ -66,7 +67,13 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      */
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
-        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        File file = null;
+        try {
+            file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        } catch (NullPointerException ex) {
+            //No external storage found
+            file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
+        }
         try {
             if(!file.exists())
                 file.createNewFile();
@@ -84,9 +91,15 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      * No internet connection? Retrieve our list that we saved from a working session.
      */
     private void retrieveCachedList() {
-        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        File file = null;
         try {
-            if(!file.exists()) {
+            file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        } catch (NullPointerException ex) {
+            //No external storage found
+            file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
+        }
+        try {
+            if(file == null || !file.exists()) {
                 Toast.makeText(getActivity(), "Make sure you have an internet connection before opening this app for the first time.", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -124,7 +137,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
                 //Launch LessonDetailActivity with necessary video info
                 Intent intent = new Intent(getActivity(), LessonDetailActivity.class);
-                intent.putExtra("LessonName", item.title);
+                intent.putExtra("LessonName",item.title);
                 intent.putExtra("VideoUrl", item.videoURL);
                 intent.putExtra("title", item.title);
                 intent.putExtra("description", item.description);
@@ -142,20 +155,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     @Override
     public void onStart(){
         super.onStart();
-
-        if (brightcoveAPI == null ){
-            brightcoveAPI = new BrightcoveAPI(getActivity());
-            brightcoveAPI.setReceiver(this);
-        }
-
-        Context context = getActivity();
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-        if (isConnected)
-            brightcoveAPI.retrieveVideos();
-
+        brightcoveAPI.retrieveVideos();
 
     }
 
