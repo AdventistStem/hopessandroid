@@ -95,13 +95,9 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
      */
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
-        File file = null;
-        try {
-            file = new File(this.getExternalFilesDir(null), offline_name);
-        } catch (NullPointerException ex) {
-            //No external storage found
-            file = new File(this.getFilesDir(), offline_name);
-        }
+        File file = new File(getExternalFilesDir(null), offline_name);
+        if(getExternalFilesDir(null) == null)
+            file = new File(getFilesDir(), offline_name);
         try {
             if(!file.exists())
                 file.createNewFile();
@@ -119,13 +115,9 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
      * No internet connection? Retrieve our list that we saved from a working session.
      */
     private void retrieveCachedList() {
-        File file = null;
-        try {
-            file = new File(this.getExternalFilesDir(null), offline_name);
-        } catch (NullPointerException ex) {
-            //No external storage found
-            file = new File(this.getFilesDir(), offline_name);
-        }
+        File file = new File(getExternalFilesDir(null), offline_name);
+        if(getExternalFilesDir(null) == null)
+            file = new File(getFilesDir(), offline_name);
         try {
             if(file == null || !file.exists()) {
                 Toast.makeText(this, "Make sure you have an internet connection before opening this archive for the first time.", Toast.LENGTH_LONG).show();

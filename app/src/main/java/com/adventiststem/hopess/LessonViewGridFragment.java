@@ -67,16 +67,11 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
      */
     private void saveItems(ArrayList<LessonItem> items) {
         items = new ArrayList<>(items);
-        File file = null;
         if(getActivity() == null)
             return;
-        try {
-            file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
-        } catch (NullPointerException ex) {
-            //No external storage found
+        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        if(getActivity().getExternalFilesDir(null) == null)
             file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
-
-        }
         try {
             if(!file.exists())
                 file.createNewFile();
@@ -96,13 +91,9 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private void retrieveCachedList() {
         if(getActivity() == null)
             return;
-        File file = null;
-        try {
-            file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
-        } catch (NullPointerException ex) {
-            //No external storage found
+        File file = new File(getActivity().getExternalFilesDir(null), OFFLINE_LIST_NAME);
+        if(getActivity().getExternalFilesDir(null) == null)
             file = new File(getActivity().getFilesDir(), OFFLINE_LIST_NAME);
-        }
         try {
             if(file == null || !file.exists()) {
                 Toast.makeText(getActivity(), "Make sure you have an internet connection before opening this app for the first time.", Toast.LENGTH_LONG).show();
