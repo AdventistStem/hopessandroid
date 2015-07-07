@@ -190,10 +190,8 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
 
-        if (pDialog!=null) {
-            if (pDialog.isShowing()) {
-                pDialog.dismiss();
-            }
+        if (pDialog!=null && pDialog.isShowing()) {
+            pDialog.dismiss();
         }
 
         saveItems(items);

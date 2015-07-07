@@ -88,7 +88,7 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
         brightcoveAPI.searchVideos(year, quarter);
 
         pDialog = new ProgressDialog(this);
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
         pDialog.setMessage("Loading Lessons");
         pDialog.show();
 
@@ -145,10 +145,8 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
 
-        if (pDialog != null) {
-            if (pDialog.isShowing()){
-                pDialog.dismiss();
-            }
+        if (pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
         }
 
 
