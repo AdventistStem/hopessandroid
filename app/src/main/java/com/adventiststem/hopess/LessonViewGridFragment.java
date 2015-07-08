@@ -1,5 +1,6 @@
 package com.adventiststem.hopess;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -24,6 +25,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,6 +39,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
     private ArrayAdapter mAdapter;
     private GridView gridView;
     private BrightcoveAPI brightcoveAPI;
+    private ProgressDialog pDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -57,6 +61,10 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
         brightcoveAPI = new BrightcoveAPI(getActivity());
         brightcoveAPI.setReceiver(this);
 
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Loading Lessons");
+        pDialog.setCancelable(false);
+        pDialog.show();
 
     }
 
@@ -181,22 +189,27 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
     @Override
     public void receiveLessonItems(ArrayList<LessonItem> items) {
-        System.out.println("LessonReceiverCalled" + items.size());
-        saveItems(items);
-        for (LessonItem lesson: items){
 
-            if (!isLessonPresent(lesson)) {
+        if (pDialog!=null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
+
+        saveItems(items);
+
+        if (mItems.isEmpty()) {
+            for (LessonItem lesson : items) {
                 mItems.add(lesson);
             }
-
-            mAdapter.notifyDataSetChanged();
-
-            //System.out.println("TITLE:"+lesson.title);
-
-            if (lesson.title.compareTo("Lesson 1 ") == 0){
-                break;
+        } else {
+            //when updating the activity
+            Collections.sort(items);
+            for (LessonItem lesson : items) {
+                if (!isLessonPresent(lesson)) {
+                    mItems.add(0, lesson);
+                }
             }
         }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

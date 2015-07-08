@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
 
-public class LessonItem implements Serializable {
+public class LessonItem implements Serializable, Comparable {
     public Drawable icon; // the drawable for the ListView item ImageView
     public String title; // the text for the ListView item title
     public String description; // the text for the ListView item description
@@ -55,5 +55,11 @@ public class LessonItem implements Serializable {
 
     public void setPdfURL(String pdfURL){
         this.pdfURL = pdfURL;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        LessonItem anotherItem = (LessonItem) another;
+        return new Integer(this.title.split(" ")[1]).compareTo(new Integer(anotherItem.title.split(" ")[1]));
     }
 }
