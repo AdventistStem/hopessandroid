@@ -151,7 +151,7 @@ public class LessonActivity extends Activity implements PlayListCallBack  {
 
 
         saveItems(items);
-        System.out.println("LessonReceiverCalled" + items.size());
+        //System.out.println("LessonReceiverCalled" + items.size());
         if (items.size() == 0){
             Toast.makeText(this, "No content available for this category", Toast.LENGTH_LONG).show();
             finish();

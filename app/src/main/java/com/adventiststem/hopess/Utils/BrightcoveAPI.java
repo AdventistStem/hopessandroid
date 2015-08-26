@@ -37,6 +37,7 @@ public class BrightcoveAPI {
     public BrightcoveAPI(Context ctx) {
         context = ctx;
         client = new AsyncHttpClient();
+        client.setLoggingLevel(Log.ERROR);
         Calendar calendar = Calendar.getInstance();
         currYear = calendar.get(Calendar.YEAR);
         latestVideosURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+currYear+"&sort_by=start_date:desc,publish_date:desc%22";
@@ -76,7 +77,7 @@ public class BrightcoveAPI {
 
                         JSONObject videoItem = (JSONObject)items.get(i);
 
-                        System.out.println(videoItem);
+                        //System.out.println(videoItem);
 
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.setThumbnailURL(videoItem.getString("thumbnailURL"));
@@ -164,7 +165,7 @@ public class BrightcoveAPI {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response){
 
-                System.out.println(response);
+                //System.out.println(response);
                 try {
                     JSONArray items = response.getJSONArray("items");
                     int size = items.length();

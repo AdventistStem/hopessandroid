@@ -178,7 +178,7 @@ public class LessonViewGridFragment extends Fragment implements PlayListCallBack
 
     //checks to see if lesson pulled already exists locally
     public boolean isLessonPresent(LessonItem item){
-        System.out.println("CHECKING FOR DUPLICATES");
+        //System.out.println("CHECKING FOR DUPLICATES");
         for (LessonItem lesson: mItems) {
             if (lesson.id.compareTo(item.id)==0)
                 return true;

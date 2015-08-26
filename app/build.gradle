@@ -31,7 +31,11 @@ dependencies {
     compile 'com.brightcove.player:android-sdk:4.+'
     compile 'com.brightcove.player:android-hls-player:4.+'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.loopj.android:android-async-http:1.4.5'
+    compile 'com.loopj.android:android-async-http:1.4.8'
     compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
     compile 'com.beardedhen:androidbootstrap:+'
+    compile files('libs/FlurryAnalytics-6.0.0.jar')
+    compile 'com.parse.bolts:bolts-android:1.+'
+    compile 'com.google.android.gms:play-services:7.5.0'
+    compile files('libs/Parse-1.10.1.jar')
 }
