@@ -82,7 +82,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 
         setContentView(R.layout.lesson_detail_activity);
 
-		videoButton = (BootstrapButton) findViewById(R.id.lesson_detail_video);
+		//videoButton = (BootstrapButton) findViewById(R.id.lesson_detail_video);
 
         tVtitle = (TextView)findViewById(R.id.lesson_detail_title);
         tVdescription = (TextView)findViewById(R.id.lesson_detail_description);
@@ -95,7 +95,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
         audioUrl = getIntent().getStringExtra("AudioUrl");
         pdfUrl = getIntent().getStringExtra("PdfUrl");
 		id = getIntent().getStringExtra("id");
-		videoButton.setBootstrapButtonEnabled(true);
+		//videoButton.setBootstrapButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(false);
 
 
@@ -521,12 +521,12 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 	@Override
 	public void onPlayVideo() {
 
-		videoButton.setBootstrapButtonEnabled(false);
+		//videoButton.setBootstrapButtonEnabled(false);
 	}
 
 	@Override
 	public void onPauseVideo() {
-		videoButton.setBootstrapButtonEnabled(true);
+		//videoButton.setBootstrapButtonEnabled(true);
 	}
 
 	@Override
@@ -564,9 +564,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 								//Study Guide
 								downloadPDFClick(null);
 
-
 								break;
-
 						}
 
 						dialog.dismiss();
