@@ -27,13 +27,13 @@ repositories {
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:21.0.1'
     compile 'com.brightcove.player:android-sdk:4.+'
     compile 'com.brightcove.player:android-hls-player:4.+'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.loopj.android:android-async-http:1.4.8'
     compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
-    compile 'com.beardedhen:androidbootstrap:+'
+    compile 'com.beardedhen:androidbootstrap:1.2.1'
     compile files('libs/FlurryAnalytics-6.0.0.jar')
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.google.android.gms:play-services:7.5.0'

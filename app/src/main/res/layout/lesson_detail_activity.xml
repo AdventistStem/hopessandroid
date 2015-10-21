@@ -53,19 +53,6 @@
         android:gravity="center">
 
         <com.beardedhen.androidbootstrap.BootstrapButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:visibility="gone"
-            android:text="Video"
-            android:onClick = "onClickVideoButton"
-            bootstrap:bb_icon_right="fa-film"
-            bootstrap:bb_roundedCorners="true"
-            bootstrap:bb_type="warning"
-            android:id="@+id/lesson_detail_video"
-
-            />
-        <com.beardedhen.androidbootstrap.BootstrapButton
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"

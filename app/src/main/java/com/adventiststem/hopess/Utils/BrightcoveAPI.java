@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 public class BrightcoveAPI {
 
     private static int currYear;
-    //private static String URL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0ROWQ_ptCOuh1H4FVfUQpUQYQkEB4IUXsYF-INls6OJaw..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:desc,publish_date:desc%22";
     private String latestVideosURL;
     private ArrayList<LessonItem> responseBody;
 
@@ -57,7 +56,6 @@ public class BrightcoveAPI {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response){
 
-                //System.out.println(response);
                 try {
                     JSONArray items = response.getJSONArray("items");
                     int size = items.length();
@@ -77,8 +75,6 @@ public class BrightcoveAPI {
 
                         JSONObject videoItem = (JSONObject)items.get(i);
 
-                        //System.out.println(videoItem);
-
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.setThumbnailURL(videoItem.getString("thumbnailURL"));
                         lessonItem.videoStillURL = videoItem.getString("videoStillURL");
@@ -93,26 +89,18 @@ public class BrightcoveAPI {
                             lessonItem.setDescription(lessonNumberAndTitle[1]);
                             lessonItem.setDate(nameDescrArr[1]);
 
-
                             //get lesson number
-                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
-                            String episode = "";
-                            if (lessonNumber[1].length() < 2) {
-                                episode = "E0" + lessonNumber[1];
-                            } else {
-                                episode = "E" + lessonNumber[1];
-                            }
+//                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
+//                            String episode = "";
+//                            if (lessonNumber[1].length() < 2) {
+//                                episode = "E0" + lessonNumber[1];
+//                            } else {
+//                                episode = "E" + lessonNumber[1];
+//                            }
 
-
-                            String quarter = "Q" + videoItem.getJSONObject("customFields").getString("category_secondary");
-                            String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".mp3";
-                            String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".pdf";
-                            String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + currYear + "-" + quarter + "-" + episode + ".mp4";
-
-
-                            lessonItem.setAudioURL(audioUrl);
-                            lessonItem.setPdfURL(pdfUrl);
-                            lessonItem.setVideoURL(videoUrl);
+                            lessonItem.setVideoURL(getVideoLink(videoItem.getString("shortDescription")));
+                            lessonItem.setAudioURL(getAudioLink(videoItem.getString("shortDescription")));
+                            lessonItem.setPdfURL(getAudioLink(videoItem.getString("shortDescription")).replace(".mp3", ".pdf"));
 
                             responseBody.add(lessonItem);
 
@@ -158,8 +146,7 @@ public class BrightcoveAPI {
             return;
         }
 
-       String searchURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:asc,publish_date:desc%22";
-        //String tempURL = "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&video_fields=HLSURL,thumbnailURL,id,name,tags&custom_fields=series_title,episode_number,url,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:2014&all=category_secondary:1&sort_by=start_date:desc,publish_date:desc";
+        String searchURL =  "http://api.brightcove.com/services/library?token=MrqqXrGUW0S_eq7p1I9S_Fv46q0O0K6L8BzFt9q09sBfsMCUHB67ZA..&custom_fields=series_title,episode_number,person,category_primary,category_secondary,original_air_date&command=search_videos&all=custom_fields:Hope%20Sabbath%20School&all=custom_fields:Episode%20Full&exact=true&all=category_primary:"+year+"&all=category_secondary:"+quarter+"&sort_by=start_date:asc,publish_date:desc%22";
 
         client.get(searchURL, new JsonHttpResponseHandler() {
             @Override
@@ -181,9 +168,9 @@ public class BrightcoveAPI {
                         lessonItem.id = videoItem.getString("id");
                         lessonItem.videoStillURL = videoItem.getString("videoStillURL");
                         lessonItem.setThumbnailURL(videoItem.getString("thumbnailURL"));
-                        //lessonItem.setVideoURL(getVideoLink(videoItem.getString("shortDescription")));
-                        //lessonItem.setAudioURL(getAudioLink(videoItem.getString("shortDescription")));
-                        //lessonItem.setPdfURL(getAudioLink(videoItem.getString("shortDescription")).replace(".mp3", ".pdf"));
+                        lessonItem.setVideoURL(getVideoLink(videoItem.getString("shortDescription")));
+                        lessonItem.setAudioURL(getAudioLink(videoItem.getString("shortDescription")));
+                        lessonItem.setPdfURL(getAudioLink(videoItem.getString("shortDescription")).replace(".mp3", ".pdf"));
 
 
 
@@ -210,24 +197,18 @@ public class BrightcoveAPI {
                                 lessonItem.setDate(nameDescrArr[1]);
                             }
 
-
                             //get lesson number
-                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
-                            String episode = "";
-                            if (lessonNumber[1].length() < 2) {
-                                episode = "E0" + lessonNumber[1];
-                            } else {
-                                episode = "E" + lessonNumber[1];
-                            }
+//                            String[] lessonNumber = lessonNumberAndTitle[0].split(" ");
+//                            String episode = "";
 
-                            String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp3";
-                            String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".pdf";
-                            String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp4";
-                            //System.out.println(audioUrl);
-
-                            lessonItem.setAudioURL(audioUrl);
-                            lessonItem.setPdfURL(pdfUrl);
-                            lessonItem.setVideoURL(videoUrl);
+//                            if (lessonNumber[1].length() < 2) {
+//                                episode = "E0" + lessonNumber[1];
+//                            } else {
+//                                episode = "E" + lessonNumber[1];
+//                            }
+//                            String audioUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp3";
+//                            String pdfUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".pdf";
+//                            String videoUrl = "http://cdn.hopetv.org/download/podcast/HSS-" + year + "-" + "Q" + quarter + "-" + episode + ".mp4";
 
                             responseBody.add(lessonItem);
                         } catch (ArrayIndexOutOfBoundsException a) {

@@ -22,6 +22,7 @@ public class MyApplication extends Application {
 
         System.out.println("Enabling Flurry Analytics....");
 
+
         // configure Flurry
         FlurryAgent.setLogEnabled(true);
 
@@ -29,8 +30,8 @@ public class MyApplication extends Application {
         FlurryAgent.init(this, MY_FLURRY_APIKEY);
 
         //Initializing Parse push notification service
-        Parse.initialize(this, "KIYanTB8nEID6slbFVoN5XpOqG4YbsEuj2igqw8O", "0orFOvHQE3XfOYWm9EWCa1rS1K5GaKZ6gQaD8IlZ");
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        //Parse.initialize(this, "KIYanTB8nEID6slbFVoN5XpOqG4YbsEuj2igqw8O", "0orFOvHQE3XfOYWm9EWCa1rS1K5GaKZ6gQaD8IlZ");
+        //ParseInstallation.getCurrentInstallation().saveInBackground();
 
 
 
