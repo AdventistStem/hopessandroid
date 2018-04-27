@@ -115,14 +115,12 @@ public class BrightcoveAPI {
                     @Override
                     public void onFailure(int statusCode, Header [] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-                        Log.e(TAG, statusCode+" : " + errorResponse.toString());
                         playListCallBack.receiveLessonItems(responseBody);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
-                        Log.e(TAG, responseString);
                         playListCallBack.receiveLessonItems(responseBody);
                     }
                 });
@@ -131,14 +129,12 @@ public class BrightcoveAPI {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                Log.e(TAG, responseString);
                 playListCallBack.receiveLessonItems(responseBody);
             }
 
             @Override
             public void onFailure(int statusCode, Header [] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.e(TAG, statusCode+" : " + errorResponse.toString());
                 playListCallBack.receiveLessonItems(responseBody);
             }
         });
@@ -204,14 +200,12 @@ public class BrightcoveAPI {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
-                        Log.e(TAG, responseString);
                         playListCallBack.receiveLessonItems(responseBody);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header [] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-                        Log.e(TAG, statusCode+" : " + errorResponse.toString());
                         playListCallBack.receiveLessonItems(responseBody);
                     }
                 });
@@ -220,14 +214,12 @@ public class BrightcoveAPI {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                Log.e(TAG, responseString);
                 playListCallBack.receiveLessonItems(responseBody);
             }
 
             @Override
             public void onFailure(int statusCode, Header [] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.e(TAG, statusCode+" : " + errorResponse.toString());
                 playListCallBack.receiveLessonItems(responseBody);
             }
         });
