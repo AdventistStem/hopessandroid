@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.adventiststem.hopess"
@@ -22,20 +22,22 @@ android {
 repositories {
     mavenCentral()
     maven {
-        url 'http://repo.brightcove.com/releases'
+        url "http://repo.brightcove.com/releases"
+    }
+    maven {
+        url "https://maven.google.com"
     }
 }
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.1'
-    compile 'com.brightcove.player:android-sdk:4.+'
-    compile 'com.brightcove.player:android-hls-player:4.+'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.loopj.android:android-async-http:1.4.8'
-    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
-    compile 'com.beardedhen:androidbootstrap:1.2.1'
-    compile files('libs/FlurryAnalytics-6.0.0.jar')
-    compile 'com.parse.bolts:bolts-android:1.+'
-    compile 'com.google.android.gms:play-services:7.5.0'
-    compile files('libs/Parse-1.10.1.jar')
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.android.support:support-v4:21.0.1'
+    api 'com.android.support:appcompat-v7:21.0.1'
+    api 'com.brightcove.player:android-sdk:4.9.2'
+    api 'com.brightcove.player:android-hls-player:4.+'
+    api 'com.squareup.picasso:picasso:2.5.2'
+    api 'com.loopj.android:android-async-http:1.4.8'
+    api 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
+    api 'com.beardedhen:androidbootstrap:2.0.0'
+    api 'com.parse.bolts:bolts-android:1.+'
+    api 'com.google.android.gms:play-services:7.5.0'
 }

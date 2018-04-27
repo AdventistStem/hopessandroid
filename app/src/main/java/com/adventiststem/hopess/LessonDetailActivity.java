@@ -69,7 +69,7 @@ public class LessonDetailActivity extends Activity implements PlayListCallBack, 
 	private long enqueue;
 	private TextView downloadTextView;
 	private TextView pdfDownloadView;
-	private BootstrapButton videoButton;
+	//private BootstrapButton videoButton;
 
 
 	@Override

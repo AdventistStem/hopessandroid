@@ -58,9 +58,10 @@
             android:layout_margin="10dp"
             android:text="Audio"
             android:onClick="onClickAudio"
-            bootstrap:bb_icon_right="fa-file-sound-o"
-            bootstrap:bb_roundedCorners="true"
-            bootstrap:bb_type="info"
+            bootstrap:roundedCorners="true"
+            bootstrap:bootstrapBrand="info"
+            bootstrap:bootstrapText="Audio"
+            bootstrap:bootstrapSize="md"
             android:id="@+id/lesson_detail_mp3"
             />
         <com.beardedhen.androidbootstrap.BootstrapButton
@@ -68,9 +69,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Study Guide"
-            bootstrap:bb_icon_right="fa-file-pdf-o"
-            bootstrap:bb_roundedCorners="true"
-            bootstrap:bb_type="danger"
+            bootstrap:roundedCorners="true"
+            bootstrap:bootstrapBrand="danger"
+            bootstrap:bootstrapText="Study Guide"
+            bootstrap:bootstrapSize="md"
             android:onClick="onClickPdf"
             android:id="@+id/lesson_detail_pdf"
             />
