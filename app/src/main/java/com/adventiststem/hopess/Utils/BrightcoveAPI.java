@@ -68,7 +68,6 @@ public class BrightcoveAPI {
                 client.get(latestVideosURL, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray items){
-                        Log.i(TAG, items.toString());
                         try {
                             int size = items.length();
 
